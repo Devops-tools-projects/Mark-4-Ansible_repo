@@ -1,0 +1,33 @@
+- name: Install OpenLDAP
+  apt:
+    name:
+      - slapd
+      - ldap-utils
+    state: present
+    update_cache: yes
+
+- name: Copy custom LDIF file
+  copy:
+    src: ./files/sk.ldif
+    dest: /tmp/sk.ldif
+
+- name: Ensure slapd is reconfigured non-interactively
+  debconf:
+    name: slapd
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: "slapd/root_password", value: "{{ admin_pass }}", vtype: "password" }
+    - { question: "slapd/root_password_again", value: "{{ admin_pass }}", vtype: "password" }
+    - { question: "slapd/domain", value: "{{ domain }}.com", vtype: "string" }
+    - { question: "slapd/backend", value: "MDB", vtype: "select" }
+
+- name: Reconfigure slapd
+  command: dpkg-reconfigure -f noninteractive slapd
+
+- name: Load LDIF file into LDAP
+  command: ldapadd -x -D "{{ bind_dn }}" -w "{{ bind_password }}" -f /tmp/sk.ldif
+  args:
+    creates: /etc/ldap/added_sk.ldif
+## the slapd is a standalone ldap daemon and ldap-utils is ldap utility commands like ldapsearch and modify.

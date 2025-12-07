@@ -1,0 +1,7 @@
+- hosts: ldap
+  roles:
+    - openldap
+
+- hosts: flask
+  roles:
+    - flask_app

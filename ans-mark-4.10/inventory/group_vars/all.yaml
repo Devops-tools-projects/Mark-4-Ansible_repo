@@ -1,0 +1,7 @@
+domain: "sk"
+base_dn: "dc=sk,dc=com"
+admin_dn: "cn=admin,dc=sk,dc=com"
+admin_pass: "admin"
+ldap_server: "ldap://xxxxxxx"
+bind_dn: "cn=admin,dc=sk,dc=com"
+bind_password: "admin"
